@@ -13,6 +13,7 @@ This repo is very much a work in progress. There are many things that can be imp
 - automatic MySQL database creation
 - automatic apache vhost creation
 - other cookbooks and ready for love (ElasticSearch)
+- MailCatcher SMTP email catch (tplaner)
 # Installation
 
 These instructions are merely one way to use these tools. I'm presenting them because I feel that they're both reasonable and simple.
@@ -105,3 +106,40 @@ I've made many annotations of issues in the Vagrantfile example, each could use 
 Trying to install this on your system and reporting back any issues that you've had with instructions listed would be a huge help.
 
 Know a bit about Vagrant / Chef and want to complain that something could be done better? Please open an issue!
+
+# MailCatcher
+
+### Setup
+
+For Laravel 4 open up `app/config/mail.php` and change:
+
+```php
+    // ...
+    'host' => 'localhost',
+    // ...
+    'port' => 1025,
+    // ...
+    'encryption' => null,
+    // ...
+```
+
+For Laravel 3 I'm assuming you're using the [Swiftmailer bundle](http://bundles.laravel.com/bundle/swiftmailer), open up `bundles/swiftmailer/start.php` and make the following change:
+
+```php
+Laravel\IoC::register('mailer.transport', function()
+{
+    return Swift_SmtpTransport::newInstance('localhost', 1025);
+});
+```
+
+For CodeIgniter open up `application/config/email.php` (you might have to create this file):
+
+```php
+$config = array(
+    'smtp_host' => 'localhost',
+    'smtp_port' => 1025,
+);
+```
+
+All emails will now be caught by MailCatcher. To view the emails go to: [http://app.local:1080/](http://app.local:1080/) or [http://10.10.10.10:1080/](http://10.10.10.10:1080/). Note: to delete emails within MailCatcher highlight the message and hit the "delete" key.
+
